@@ -1,0 +1,16 @@
+---
+# vars file for podman_pull_and_run_image
+application_port: "{{ tower_input_application_port | default(8080) }}"
+
+# Container Vars
+containers:
+- container_name: "{{ tower_input_app_container_name | default('simpleweb') }}"
+  container_type: app
+  container_image_name: "{{ tower_input_container_image_name | default('quay.io/rsoliman/simple-web-container:latest') }}"
+  container_privileged: "{{ tower_input_app_container_privileged | default(false) }}"
+  container_restart_policy: "{{ tower_input_app_container_restart_policy | default('always') }}"
+  container_ports: 
+  - "8080:80"
+  container_envs:
+    APP_NAME: SimpleWeb
+

@@ -1,0 +1,22 @@
+namespace: rsoliman
+name: containers_and_k8s_demos
+version: 1.0.0
+readme: README.md
+authors:
+- Raed Soliman <raedrizk@gmail.com>
+
+description: A collection of roles used to demo Containers & K8s automation using Ansible.
+
+license:
+- "MIT"
+
+tags: ['Podman', 'K8S', 'demo','ansible','raedrizk','rsoliman']
+
+dependencies:
+    "containers.podman": "*"
+    "community.kubernetes": "*"
+    "ansible.builtin": "*"
+
+repository: http://example.com/repository
+homepage: http://example.com
+issues: http://example.com/issue/tracker

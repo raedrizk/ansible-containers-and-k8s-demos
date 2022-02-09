@@ -1,0 +1,76 @@
+---
+# tasks file for podman_pull_and_run_image
+- name: Stop the containers 
+  containers.podman.podman_container:
+    name: "{{ item.container_name }}"
+    state: absent
+  loop: "{{ containers }}"
+
+- name: Make sure images are not there
+  containers.podman.podman_image:
+    name: "{{ item.container_image_name }}"
+    state: absent
+    validate_certs: false
+  loop: "{{ containers }}"
+  
+- name: pull down the latest images
+  containers.podman.podman_image:
+    name: "{{ item.container_image_name }}"
+    pull: true
+    state: present
+    validate_certs: false
+  loop: "{{ containers }}"
+
+- name: Create directories for persistant container volumes if necessary
+  ansible.builtin.file:
+    path: "{{ item.container_volumes.host_dir }}"
+    state: directory
+    mode: "0770"
+    owner: "core"
+    group: "core"
+    setype: container_file_t
+  become: yes
+  when: item.container_volumes is defined
+  loop: "{{ containers }}"
+
+
+- name: Create application containers with volumes
+  containers.podman.podman_container:
+    name: "{{ item.container_name }}"
+    image: "{{ item.container_image_name }}"
+    state: started
+    restart_policy: "{{ item.container_restart_policy }}"
+    privileged: "{{ item.container_privileged }}"
+    ports: "{{ item.container_ports }}"
+    env: "{{ item.container_envs }}"
+    volume: "{{ item.container_volumes.host_dir }}:{{ item.container_volumes.container_dir }}"
+  when: item.container_volumes is defined
+  loop: "{{ containers }}"
+
+- name: Create application containers with no volumes
+  containers.podman.podman_container:
+    name: "{{ item.container_name }}"
+    image: "{{ item.container_image_name }}"
+    state: started
+    restart_policy: "{{ item.container_restart_policy }}"
+    privileged: "{{ item.container_privileged }}"
+    ports: "{{ item.container_ports }}"
+    env: "{{ item.container_envs }}"
+  when: item.container_volumes is not defined
+  loop: "{{ containers }}"
+
+- name: open port {{ application_port }} in firewalld
+  firewalld:
+    port: "{{ application_port }}/tcp"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  become: true
+  
+- name: sePort {{ application_port }}
+  seport:
+    ports: "{{ application_port }}"
+    proto: tcp
+    setype: http_port_t
+    state: present
+  become: true

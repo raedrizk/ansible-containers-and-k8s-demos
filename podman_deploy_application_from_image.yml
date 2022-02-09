@@ -1,0 +1,5 @@
+---
+- name: Deploy a containerized application using podman
+  hosts: all
+  roles:
+  - rsoliman.containers_and_k8s_demos.podman_pull_and_run_image
