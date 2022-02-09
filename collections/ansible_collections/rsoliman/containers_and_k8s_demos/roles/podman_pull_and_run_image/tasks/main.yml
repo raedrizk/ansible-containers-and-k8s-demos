@@ -12,9 +12,18 @@
     state: absent
     validate_certs: false
   loop: "{{ containers }}"
-  
+
+- name: Login to default registry and create ${XDG_RUNTIME_DIR}/containers/auth.json
+  containers.podman.podman_login:
+    username: "{{ controller_registry_username }}"
+    password: "{{ controller_registry_password }}"
+    registry: "{{ controller_registry_address }}"
+
+
 - name: pull down the latest images
   containers.podman.podman_image:
+    username: "{{ controller_registry_username }}"
+    password: "{{ controller_registry_password }}"
     name: "{{ item.container_image_name }}"
     pull: true
     state: present
