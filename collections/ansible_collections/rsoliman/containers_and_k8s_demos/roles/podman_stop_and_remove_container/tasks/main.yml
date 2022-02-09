@@ -1,0 +1,7 @@
+---
+# tasks file for podman_pull_and_run_image
+- name: Stop the containers 
+  containers.podman.podman_container:
+    name: "{{ item.container_name }}"
+    state: absent
+  loop: "{{ containers }}"

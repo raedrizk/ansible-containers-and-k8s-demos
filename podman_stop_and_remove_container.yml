@@ -1,0 +1,5 @@
+---
+- name: Stop and remove a running container
+  hosts: all
+  roles:
+  - rsoliman.containers_and_k8s_demos.podman_stop_and_remove_container
