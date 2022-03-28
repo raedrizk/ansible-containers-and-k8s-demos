@@ -1,5 +1,5 @@
 ---
-- name: Create a new namespace
+- name: Ensure that namespace {{ namespace_name }} is {{ namespace_state }}
   redhat.openshift.k8s:
     name: "{{ namespace_name }}"
     api_version: v1
