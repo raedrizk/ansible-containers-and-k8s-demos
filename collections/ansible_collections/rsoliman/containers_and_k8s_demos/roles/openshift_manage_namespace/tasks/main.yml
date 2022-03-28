@@ -1,0 +1,7 @@
+---
+- name: Create a new namespace
+  redhat.openshift.k8s:
+    name: "{{ namespace_name }}"
+    api_version: v1
+    kind: Namespace
+    state: "{{ namespace_state }}"

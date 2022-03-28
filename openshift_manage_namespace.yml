@@ -1,0 +1,5 @@
+---
+- name: Create or remove a namespace on OpenShift
+  hosts: all
+  roles:
+  - rsoliman.containers_and_k8s_demos.openshift_manage_namespace
