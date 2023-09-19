@@ -1,0 +1,37 @@
+---
+- name: Process and apply an OpenShift template
+  hosts: localhost
+  vars: 
+    apply_changes: false
+  tasks:
+
+  - name: Process the httpd template
+    redhat.openshift.openshift_process:
+      name: httpd-example
+      namespace: openshift
+      parameters:
+        NAMESPACE: httpd-example
+        NAME: ansible-demo
+        MEMORY_LIMIT: 256Mi
+      state: rendered
+    register: result
+  
+  - debug:
+      var: result
+
+  - name: Create the namespace
+    redhat.openshift.k8s:
+      name: httpd-example
+      api_version: v1
+      kind: Namespace
+      state: present
+    when: apply_changes 
+
+  - name: Create the rendered resources in the designated namespace
+    redhat.openshift.k8s:
+      namespace: httpd-example
+      definition: '{{ item }}'
+      wait: yes
+      apply: yes
+    loop: '{{ result.resources }}'
+    when: apply_changes 

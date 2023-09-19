@@ -1,0 +1,13 @@
+---
+- name: Remove an application installed from a helm repo
+  hosts: localhost
+  vars:
+    application_name: "{{ application_name_choice | default('nginx-server') }}"
+    application_namespace: "{{ application_namespace_choice | default('nginx-server') }}"
+  tasks:
+  - name: remove "{{ application_name }}" Chart
+    kubernetes.core.helm:
+      name: "{{ application_name }}"
+      release_namespace: "{{ application_namespace }}"
+      release_state: absent
+      purge: true

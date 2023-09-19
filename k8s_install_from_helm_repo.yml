@@ -1,0 +1,33 @@
+---
+- name: Install an application from a help repo
+  hosts: localhost
+  vars:
+    helm_repo_name: "{{ helm_repo_name_choice | default('bitnami') }}"
+    helm_repo_url: "{{ helm_repo_url_choice | default('https://charts.bitnami.com/bitnami') }}"
+    application_name: "{{ application_name_choice | default('nginx-server') }}"
+    application_namespace: "{{ application_namespace_choice | default('nginx-server') }}"
+    create_namespace: "{{ create_namespace_choice | default(true) }}"
+    helm_chart_name: "{{ helm_chart_name_choice | default('bitnami/nginx') }}"
+  tasks:
+  - name: Add {{ helm_repo_name }} helm repo
+    kubernetes.core.helm_repository:
+      name: "{{ helm_repo_name }}"
+      repo_url: "{{ helm_repo_url }}"
+
+
+  - name: Install {{ helm_chart_name }} Chart
+    kubernetes.core.helm:
+      name: "{{ application_name }}"
+      chart_ref: "{{ helm_chart_name }}"
+      release_namespace: "{{ application_namespace }}"
+      release_state: present
+      create_namespace: "{{ create_namespace }}"
+
+  - name: Gather information about {{ application_name }}
+    kubernetes.core.helm_info:
+      name: "{{ application_name }}"
+      release_namespace: "{{ application_namespace }}"
+    register: chart_info
+
+  - debug:
+      var: chart_info
